@@ -2,7 +2,7 @@ class AppSizes {
   AppSizes._();
 
   // =====================
-  // Spacing (Padding & Margin)
+  // Spacing (Padding & Margin) &(Width and Height)
   // =====================
   static const double s4 = 4;
   static const double s8 = 8;
@@ -12,6 +12,9 @@ class AppSizes {
   static const double s24 = 24;
   static const double s32 = 32;
   static const double s40 = 40;
+  static const double s6 = 6;
+  static const double s2 = 2;
+  static const double s29 = 29;
 
   // =====================
   // Border Radius
@@ -20,7 +23,7 @@ class AppSizes {
   static const double r12 = 12;
   static const double r16 = 16;
   static const double r24 = 24;
-
+  static const double r100 = 100;
   // =====================
   // Button Heights
   // =====================
