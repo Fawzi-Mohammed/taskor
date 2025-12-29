@@ -15,6 +15,12 @@ class AppSizes {
   static const double s6 = 6;
   static const double s2 = 2;
   static const double s29 = 29;
+  static const double s3 = 3;
+  static const double s5 = 5;
+  static const double s19 = 19;
+  static const double s48 = 48;
+  static const double s1_5 = 1.5;
+    static const double s0_5 = 0.5;
 
   // =====================
   // Border Radius
@@ -24,6 +30,9 @@ class AppSizes {
   static const double r16 = 16;
   static const double r24 = 24;
   static const double r100 = 100;
+  static const double r6 = 6;
+  static const double r15 = 15;
+
   // =====================
   // Button Heights
   // =====================

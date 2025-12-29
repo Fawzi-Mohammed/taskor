@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class OnboardingContent extends StatelessWidget {
   const OnboardingContent({
@@ -20,7 +21,7 @@ class OnboardingContent extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(imagePath),
+        SvgPicture.asset(imagePath),
         const SizedBox(height: 40),
         Text(title, textAlign: TextAlign.center, style: titleTextStyle),
         const SizedBox(height: 20),
