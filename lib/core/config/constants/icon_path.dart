@@ -7,7 +7,8 @@ class IconPath {
   static const String calendar = 'assets/Icons/Calendar_Icon.svg';
   static const String company = 'assets/Icons/Company_Icon.svg';
   static const String completedTask = 'assets/Icons/Completed_Task_Icon.svg';
-  static const String dashboardProject = 'assets/Icons/dashboard_project_icon.svg';
+  static const String dashboardProject =
+      'assets/Icons/dashboard_project_icon.svg';
   static const String edit = 'assets/Icons/Edit_Icon.svg';
   static const String estimatedTime = 'assets/Icons/Est_Time_Icon.svg';
   static const String home = 'assets/Icons/HomeIcon.svg';
@@ -22,4 +23,5 @@ class IconPath {
   static const String remainingTasks = 'assets/Icons/Remaining_Tasks_Icon.svg';
   static const String remainingTime = 'assets/Icons/Rm_Time_Icon.svg';
   static const String totalEarnings = 'assets/Icons/total_earnings_icon.svg';
+  static const String addIcon = 'assets/Icons/Add_Icon.svg';
 }
