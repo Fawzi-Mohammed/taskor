@@ -17,7 +17,7 @@ class AppStrings {
       "“Manage all your projects and tasks from one place.”";
   static const String loginFailedString = "login Failed";
   static const String loginFailedSubtitleString =
-      "Email is incorrect . Please double -check your credentials . ";
+      "Email is incorrect . Please double -\ncheck your credentials . ";
   static const String tryAgainString = "Try Again";
   static const String welcomeBackSubtitleString =
       "Please login or sign up to continue our opportunity .";
@@ -30,7 +30,7 @@ class AppStrings {
   static const String passwordStringHint = 'xxxxxxxxx';
   static const String dontHaveAccountString = "Don't have an account? ";
   static const String createAnAccountString = "Create an account";
-  static const String forgetPasswordString = "Forget Password?";
+  static const String forgetPasswordString = "Forget Password ?";
   static const String signUpString = "Sign Up";
   static const String alreadyHaveAccountString = "Already have an account? ";
   static const String nameString = "Name";
@@ -143,4 +143,8 @@ class AppStrings {
   static const String somethingWentWrongString = "Something went wrong";
   static const String ourServersAreHavingSomeTroubleString =
       "Our servers are having trouble right now";
+  static const String clientString = "Client: ";
+  static const String progressString = "Progress";
+  static const String hoursString = "hrs";
+  static const String percentageString = "%";
 }

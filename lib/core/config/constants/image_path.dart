@@ -1,6 +1,6 @@
 class ImagePath {
   static const String logo = 'assets/images/logo.png';
-  static const String loginImage = 'assets/images/login_Image.svg';
+  static const String loginImage = 'assets/Images/Login_Image.png';
   static const String onboarding1 = 'assets/Images/OnboadrdingScreenImage1.svg';
   static const String onboarding2 = 'assets/Images/OnboadrdingScreenImage2.svg';
   static const String onboarding3 = 'assets/Images/OnboadrdingScreenImage3.svg';

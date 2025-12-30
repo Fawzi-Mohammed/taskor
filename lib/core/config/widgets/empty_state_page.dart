@@ -25,16 +25,25 @@ class NoEmptyStatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(appBarTitle)),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(title, style: titleTextStyle),
-          const SizedBox(height: AppSizes.s8),
-          Text(subTitle, style: subTitleTextStyle, textAlign: TextAlign.center),
-          const SizedBox(height: AppSizes.s16),
-          AppDottedButton(buttonText: buttonText, onTap: onTap),
-        ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 53),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(title, style: titleTextStyle),
+              const SizedBox(height: AppSizes.s8),
+              Text(
+                subTitle,
+                style: subTitleTextStyle,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSizes.s16),
+              AppDottedButton(buttonText: buttonText, onTap: onTap),
+            ],
+          ),
+        ),
       ),
     );
   }

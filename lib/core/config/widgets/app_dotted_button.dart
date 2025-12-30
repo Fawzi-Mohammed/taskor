@@ -15,26 +15,28 @@ class AppDottedButton extends StatelessWidget {
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
-    return DottedBorder(
-      options: RectDottedBorderOptions(
-        dashPattern: const [2, 2],
-        strokeWidth: 1,
-        color: ColorManager.primary,
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsetsGeometry.fromLTRB(120, 8.5, 100, 8.5),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return SizedBox(
+      width: double.infinity,
+      child: DottedBorder(
+        options: RectDottedBorderOptions(
+          dashPattern: const [2, 2],
+          strokeWidth: 1,
+          color: ColorManager.primary,
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsetsGeometry.symmetric(vertical: 8.5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
 
-            children: [
-              SvgPicture.asset(IconPath.addIcon),
-              const SizedBox(width: 1.5),
-              Text(buttonText, style: AppTextStyles.semiBold10),
-            ],
+              children: [
+                SvgPicture.asset(IconPath.addIcon),
+                const SizedBox(width: 1.5),
+                Text(buttonText, style: AppTextStyles.semiBold10),
+              ],
+            ),
           ),
         ),
       ),

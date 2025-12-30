@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
+import 'package:taskor/core/config/constants/app_sizes.dart';
 import 'package:taskor/core/config/constants/color_manager.dart';
 
 class AppLinearProgressBar extends StatelessWidget {
@@ -21,6 +22,7 @@ class AppLinearProgressBar extends StatelessWidget {
       animateProgress: true,
       animationDuration: Duration(milliseconds: 500),
       animationCurve: Curves.easeInOut,
+      borderRadius: BorderRadiusGeometry.circular(AppSizes.s4),
     );
   }
 }
