@@ -68,7 +68,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     color: ColorManager.headline,
   );
- 
+
   static const TextStyle medium14 = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,

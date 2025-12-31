@@ -25,4 +25,5 @@ class IconPath {
   static const String totalEarnings = 'assets/Icons/total_earnings_icon.svg';
   static const String addIcon = 'assets/Icons/Add_Icon.svg';
   static const String remainingTasksInProject = 'assets/Icons/Task_Icon.svg';
+  static const String workingHours = 'assets/Icons/working_hours_icon.svg';
 }

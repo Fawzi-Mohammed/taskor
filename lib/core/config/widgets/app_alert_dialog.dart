@@ -20,7 +20,7 @@ class AppAlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       contentPadding: EdgeInsets.symmetric(
-        vertical: AppSizes.s13,
+        vertical: AppSizes.s14,
         horizontal: AppSizes.s8,
       ),
       shape: RoundedRectangleBorder(
