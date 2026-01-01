@@ -1,16 +1,17 @@
 # taskor
 
-A new Flutter project.
+Taskor is a modern Flutter app for freelancers and companies to manage development work. It keeps every developer’s tasks and projects organized while tracking total earnings and total hours so teams always know where time and money go.
 
-## Getting Started
+## Use cases
 
-This project is a starting point for a Flutter application.
+- Centralize project and task tracking for individual developers or full teams.
+- Add, update, and delete tasks to keep work items current and clear.
+- Create, update, and delete projects while monitoring overall progress.
+- Monitor total hours and total earnings to stay on budget and on schedule.
+- Deliver everything with a polished, modern UI/UX suitable for client-facing workflows.
 
-A few resources to get you started if this is your first Flutter project:
+## Getting started
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Install Flutter and set up your environment: <https://docs.flutter.dev/get-started/install>
+- Run `flutter pub get` to install dependencies.
+- Launch the app with `flutter run` on your desired device or emulator.

@@ -1,18 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:taskor/core/config/constants/app_strings.dart';
+import 'package:taskor/core/config/constants/icon_path.dart';
+import 'package:taskor/core/config/widgets/app_bottom_nav_bar.dart';
+import 'package:taskor/core/config/constants/app_text_styles.dart';
+import 'package:taskor/core/config/constants/color_manager.dart';
+import 'package:taskor/core/config/extensions/text_style_extension.dart';
+import 'package:taskor/core/config/widgets/app_project_list_card.dart';
+import 'package:taskor/core/config/widgets/profile_option_item.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const Scaffold(body: Text('Flutter Demo Home Page')),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainScaffold(),
+    );
+  }
+}
+
+class MainScaffold extends StatefulWidget {
+  const MainScaffold({super.key});
+
+  @override
+  State<MainScaffold> createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends State<MainScaffold> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: _index,
+        onChanged: (newIndex) => setState(() => _index = newIndex),
+      ),
+      body: IndexedStack(
+        index: _index,
+        children: const [HomePage(), ProjectsPage(), ProfilePage()],
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text("Home Page"));
+  }
+}
+
+class ProjectsPage extends StatelessWidget {
+  const ProjectsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: AppProjectListCard(
+          numberOFFinishedTasks: 2,
+          numberOfTotalTasks: 5,
+          numberOFFinishedHours: 10,
+          numberOfTotalHours: 40,
+          numberOfTasksOrProjects: 5,
+          currentTaskOrProjects: 3,
+          projectTitle: 'Flutter',
+          clientName: 'flutter.dev',
+          projectTitleTextStyle: AppTextStyles.semiBold14.withColor(
+            ColorManager.primary,
+          ),
+          clientNameTextStyle: AppTextStyles.medium8.withColor(
+            ColorManager.subtitleAndToDoColor,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ProfileOptionItem(
+          options: [
+            ProfileOptionData(
+              iconPath: IconPath.activeProject,
+              value: '10',
+              label: AppStrings.projectsString,
+            ),
+            ProfileOptionData(
+              iconPath: IconPath.workingHours,
+              value: '55',
+              label: AppStrings.workingHoursString,
+            ),
+            ProfileOptionData(
+              iconPath: IconPath.activeProject,
+              value: r'$ 12,340',
+              label: AppStrings.totalEarningsString,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
