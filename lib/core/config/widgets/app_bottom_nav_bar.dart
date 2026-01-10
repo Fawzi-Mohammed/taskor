@@ -24,7 +24,10 @@ class AppBottomNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: AppSizes.s20,
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: ColorManager.primary,
