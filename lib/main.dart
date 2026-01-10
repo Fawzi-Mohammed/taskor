@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:taskor/core/config/constants/app_strings.dart';
 import 'package:taskor/core/config/constants/icon_path.dart';
 import 'package:taskor/core/config/widgets/app_bottom_nav_bar.dart';
@@ -8,8 +9,13 @@ import 'package:taskor/core/config/extensions/text_style_extension.dart';
 import 'package:taskor/core/config/widgets/app_project_list_card.dart';
 import 'package:taskor/core/config/widgets/profile_option_item.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  runApp(const MyApp());
+    FlutterNativeSplash.remove();
 
+  }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
