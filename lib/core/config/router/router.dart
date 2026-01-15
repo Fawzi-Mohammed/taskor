@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
+import 'package:taskor/features/splash_onboarding/presentation/pages/onboarding_page.dart';
+import 'package:taskor/features/splash_onboarding/presentation/pages/splash_page.dart';
+import 'package:taskor/main.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -8,8 +11,12 @@ class AppRouter {
     routes: [
       // Splash / Onboarding
       GoRoute(
+        path: RoutesName.onboarding,
+        builder: (context, state) => const OnboardingPage(),
+      ),
+      GoRoute(
         path: RoutesName.splash,
-        builder: (context, state) => const _PlaceholderPage(title: 'Splash'),
+        builder: (context, state) => const SplashPage(),
       ),
 
       // Auth
@@ -47,7 +54,7 @@ class AppRouter {
       // Main (Bottom Nav Shell)
       GoRoute(
         path: RoutesName.main,
-        builder: (context, state) => const _MainShell(),
+        builder: (context, state) => const MainScaffold(),
         routes: [
           GoRoute(
             path: RoutesName.home,

@@ -8,7 +8,7 @@ class RoutesName {
   static const String login = '/login';
   static const String signUp = '/sign-up';
   static const String loginFailed = '/login-failed';
-
+  static const String onboarding = '/onboarding';
   // Forgot Password flow (from your screenshots)
   static const String forgotEmail = '/forgot-email';
   static const String verifyCode = '/verify-code';

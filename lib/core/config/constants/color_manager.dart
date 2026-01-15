@@ -8,4 +8,5 @@ class ColorManager {
   static const Color doneColor = Color(0XFF22C55E);
   static const Color mediumPriorityColorAndInProcessColor = Color(0XFFF59E0B);
   static const Color lowPriorityColor = Color(0XFF6380D7);
+  static const Color inActiveDOtesColor = Color(0XFFEFE8F8);
 }

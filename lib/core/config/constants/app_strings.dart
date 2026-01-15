@@ -147,4 +147,6 @@ class AppStrings {
   static const String progressString = "Progress";
   static const String hoursString = "hrs";
   static const String percentageString = "%";
+  static const String errorToSavestatusOfOnboarding =
+      'Failed to save onboarding status';
 }

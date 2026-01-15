@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:taskor/core/error/failures.dart';
 import 'package:taskor/features/splash_onboarding/data/datasources/onboarding_local_data_source.dart';
 import 'package:taskor/features/splash_onboarding/data/models/onboarding_status_model.dart';
-import 'package:taskor/features/splash_onboarding/domain/entities/onboarding_status_model.dart';
+import 'package:taskor/features/splash_onboarding/domain/entities/onboarding_status_entity.dart';
 import 'package:taskor/features/splash_onboarding/domain/repositories/onboarding_repository.dart';
 
 class OnboardingRepositoryImpl implements OnboardingRepository {
@@ -28,5 +28,4 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
     }
   }
 
-  // Implementation details would go here
 }
