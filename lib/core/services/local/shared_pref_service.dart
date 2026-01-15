@@ -15,8 +15,8 @@ class SharedPrefService {
   }
 
   // Read
-  bool? getBool(String key) {
-    return _prefs.getBool(key);
+  bool getBool(String key) {
+    return _prefs.getBool(key) ?? false;
   }
 
   String? getString(String key) {
