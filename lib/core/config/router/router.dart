@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
+import 'package:taskor/features/auth/presentation/pages/login_failed_page.dart';
+import 'package:taskor/features/auth/presentation/pages/login_page.dart';
+import 'package:taskor/features/auth/presentation/pages/signup_page.dart';
 import 'package:taskor/features/splash_onboarding/presentation/pages/onboarding_page.dart';
 import 'package:taskor/features/splash_onboarding/presentation/pages/splash_page.dart';
 import 'package:taskor/main.dart';
@@ -22,16 +25,15 @@ class AppRouter {
       // Auth
       GoRoute(
         path: RoutesName.login,
-        builder: (context, state) => const _PlaceholderPage(title: 'Login'),
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
         path: RoutesName.signUp,
-        builder: (context, state) => const _PlaceholderPage(title: 'Sign Up'),
+        builder: (context, state) => const SignupPage(),
       ),
       GoRoute(
         path: RoutesName.loginFailed,
-        builder: (context, state) =>
-            const _PlaceholderPage(title: 'Login Failed'),
+        builder: (context, state) => const LoginFailedPage(),
       ),
 
       // Forgot Password flow

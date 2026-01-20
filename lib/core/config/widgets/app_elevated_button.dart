@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:taskor/core/config/constants/app_sizes.dart';
+import 'package:taskor/core/config/extensions/padding_extension.dart';
 
 class AppElevatedButton extends StatelessWidget {
   const AppElevatedButton({
@@ -36,10 +38,11 @@ class AppElevatedButton extends StatelessWidget {
                 : BorderSide.none,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          child: Text(label, style: textStyle),
-        ),
+        child: Text(
+          label,
+          style: textStyle,
+          textAlign: TextAlign.center,
+        ).padSym(vertical: AppSizes.s14),
       ),
     );
   }

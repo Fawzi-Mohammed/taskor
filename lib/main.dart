@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:taskor/core/config/constants/app_strings.dart';
 import 'package:taskor/core/config/constants/icon_path.dart';
-import 'package:taskor/core/config/widgets/app_bottom_nav_bar.dart';
 import 'package:taskor/core/config/constants/app_text_styles.dart';
 import 'package:taskor/core/config/constants/color_manager.dart';
 import 'package:taskor/core/config/extensions/text_style_extension.dart';
@@ -11,6 +10,8 @@ import 'package:taskor/core/config/router/router.dart';
 import 'package:taskor/core/config/widgets/app_project_list_card.dart';
 import 'package:taskor/core/config/widgets/profile_option_item.dart';
 import 'package:taskor/core/di/service_locator.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskor/features/auth/presentation/pages/login_page.dart';
 import 'package:taskor/features/splash_onboarding/presentation/bloc/splash_onboarding_bloc.dart';
 
 void main() async {
@@ -28,8 +29,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<SplashOnboardingBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<SplashOnboardingBloc>()),
+        BlocProvider(create: (_) => sl<AuthBloc>()),
+      ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter.router,
@@ -46,19 +50,20 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
-  int _index = 0;
+  // int _index = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: _index,
-        onChanged: (newIndex) => setState(() => _index = newIndex),
-      ),
-      body: IndexedStack(
-        index: _index,
-        children: const [HomePage(), ProjectsPage(), ProfilePage()],
-      ),
+      // bottomNavigationBar: AppBottomNavBar(
+      //   currentIndex: _index,
+      //   onChanged: (newIndex) => setState(() => _index = newIndex),
+      // ),
+      // body: IndexedStack(
+      //   index: _index,
+      //   children: const [HomePage(), ProjectsPage(), ProfilePage()],
+      // ),
+      body: LoginPage(),
     );
   }
 }

@@ -26,4 +26,6 @@ class IconPath {
   static const String addIcon = 'assets/Icons/Add_Icon.svg';
   static const String remainingTasksInProject = 'assets/Icons/Task_Icon.svg';
   static const String workingHours = 'assets/Icons/working_hours_icon.svg';
+  static const String passwordIcon = 'assets/Icons/password_icon.svg';
+  static const String emailIcon = 'assets/Icons/email_icon.svg';
 }
