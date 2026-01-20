@@ -92,14 +92,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: Column(
               children: [
                 // Skip
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: CustomTextButton(
-                    textStyle: AppTextStyles.semiBold15,
-                    label: AppStrings.skipString,
-                    onPressed: _onSkipPressed,
-                  ),
-                ),
+                !_isLastPage
+                    ? Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: CustomTextButton(
+                          textStyle: AppTextStyles.semiBold15,
+                          label: AppStrings.skipString,
+                          onPressed: _onSkipPressed,
+                        ),
+                      )
+                    : SizedBox(),
 
                 // PageView
                 Expanded(
