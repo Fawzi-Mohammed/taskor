@@ -19,7 +19,11 @@ class OfflineFailure extends Failures {
   List<Object?> get props => [];
 }
 
-class LoginFailure extends Failures {
+class AuthFailure extends Failures {
+  final String message;
+
+  AuthFailure(this.message);
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [message];
 }
