@@ -109,4 +109,9 @@ class AppTextStyles {
     fontWeight: FontWeight.w500,
     color: ColorManager.headline,
   );
+  static const TextStyle regular16 = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: ColorManager.headline,
+  );
 }
