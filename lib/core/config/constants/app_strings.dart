@@ -40,6 +40,7 @@ class AppStrings {
   static const String createAccount = "Create a Account";
   static const String createAccountSubtitle =
       "Create your account and enjoy the best services";
+  static const String enterEmailAddressTitleString = "Enter your email address";
   static const String enterYourEmailString =
       "Enter your email address to reset your password";
   static const String enterYourEmailHintString = "Enter your email";
@@ -48,7 +49,7 @@ class AppStrings {
   static const String continueString = "Continue";
   static const String cancelString = "Cancel";
   static const String enterYourAddressCorrectlyString =
-      "Please enter your email address correctly so that you can reset your password.";
+      "   Please enter your email address correctly so that you can reset \n   your password.";
   static const String enterCodeTitleString = 'Enter Code';
   static const String enterCodeSubtitleString =
       "Please check your email for the confirmation code we sent  ";

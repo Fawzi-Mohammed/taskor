@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
+import 'package:taskor/features/auth/presentation/pages/enter_email_address_page.dart';
 import 'package:taskor/features/auth/presentation/pages/login_failed_page.dart';
 import 'package:taskor/features/auth/presentation/pages/login_page.dart';
 import 'package:taskor/features/auth/presentation/pages/signup_page.dart';
@@ -39,8 +40,7 @@ class AppRouter {
       // Forgot Password flow
       GoRoute(
         path: RoutesName.forgotEmail,
-        builder: (context, state) =>
-            const _PlaceholderPage(title: 'Recover by Email'),
+        builder: (context, state) => const EnterEmailAddressPage(),
       ),
       GoRoute(
         path: RoutesName.verifyCode,

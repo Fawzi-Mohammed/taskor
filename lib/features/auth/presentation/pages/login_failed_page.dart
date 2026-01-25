@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/constants/app_sizes.dart';
 import 'package:taskor/core/config/constants/app_strings.dart';
 import 'package:taskor/core/config/constants/app_text_styles.dart';
@@ -6,6 +7,7 @@ import 'package:taskor/core/config/constants/color_manager.dart';
 import 'package:taskor/core/config/constants/image_path.dart';
 import 'package:taskor/core/config/extensions/padding_extension.dart';
 import 'package:taskor/core/config/extensions/text_style_extension.dart';
+import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
 
@@ -46,7 +48,7 @@ class LoginFailedPage extends StatelessWidget {
             const SizedBox(height: AppSizes.s10),
             AppElevatedButton(
               label: AppStrings.forgetPasswordString,
-              onPressed: () {},
+              onPressed: () => context.go(RoutesName.forgotEmail),
               backGroundColor: Colors.white,
               borderRadius: AppSizes.s4,
               borderColor: ColorManager.primary,

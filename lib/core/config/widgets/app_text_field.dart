@@ -18,6 +18,9 @@ class AppTextField extends StatefulWidget {
     this.borderWidth,
     this.isPassword = false,
     this.suffixIconConstraints,
+    this.errorStyle,
+    this.errorMaxLines,
+    this.errorSpacing,
   });
   final TextEditingController? controller;
   final Widget? hintText;
@@ -33,6 +36,9 @@ class AppTextField extends StatefulWidget {
   final double? borderWidth;
   final bool isPassword;
   final BoxConstraints? suffixIconConstraints;
+  final TextStyle? errorStyle;
+  final int? errorMaxLines;
+  final double? errorSpacing;
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
@@ -43,45 +49,104 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     final resolvedBorderWidth = widget.borderWidth ?? 0.5;
-    return TextFormField(
-      maxLines: widget.maxLines,
-      controller: widget.controller,
-      keyboardType: widget.keyboardType,
-      obscureText: widget.isPassword ? _obscureText : false,
-      onFieldSubmitted: widget.onSubmitted,
-      validator: widget.validator,
-      enabled: widget.enabled,
-
-      decoration: InputDecoration(
-        suffixIconConstraints: widget.suffixIconConstraints,
-        label: widget.labelText,
-        hint: widget.hintText,
-        prefixIcon: widget.prefixIcon,
-        prefixIconConstraints: widget.prefixIconConstraints,
-        suffixIcon: widget.isPassword
-            ? IconButton(
-                onPressed: () => setState(() => _obscureText = !_obscureText),
-                icon: Icon(
-                  _obscureText
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: ColorManager.primary,
-                ),
-              )
-            : widget.suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(width: resolvedBorderWidth),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(width: resolvedBorderWidth),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(width: resolvedBorderWidth),
+    final resolvedBorderColor = ColorManager.subtitleAndToDoColor;
+    final decoration = InputDecoration(
+      suffixIconConstraints: widget.suffixIconConstraints,
+      label: widget.labelText,
+      hint: widget.hintText,
+      prefixIcon: widget.prefixIcon,
+      prefixIconConstraints: widget.prefixIconConstraints,
+      errorStyle: widget.errorStyle,
+      errorMaxLines: widget.errorMaxLines,
+      suffixIcon: widget.isPassword
+          ? IconButton(
+              onPressed: () => setState(() => _obscureText = !_obscureText),
+              icon: Icon(
+                _obscureText
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: ColorManager.primary,
+              ),
+            )
+          : widget.suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(
+          width: resolvedBorderWidth,
+          color: resolvedBorderColor,
         ),
       ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(
+          width: resolvedBorderWidth,
+          color: resolvedBorderColor,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(
+          width: resolvedBorderWidth,
+          color: resolvedBorderColor,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(
+          width: resolvedBorderWidth,
+          color: resolvedBorderColor,
+        ),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(
+          width: resolvedBorderWidth,
+          color: resolvedBorderColor,
+        ),
+      ),
+    );
+
+    if (widget.errorSpacing == null) {
+      return TextFormField(
+        maxLines: widget.maxLines,
+        controller: widget.controller,
+        keyboardType: widget.keyboardType,
+        obscureText: widget.isPassword ? _obscureText : false,
+        onFieldSubmitted: widget.onSubmitted,
+        validator: widget.validator,
+        enabled: widget.enabled,
+        decoration: decoration,
+      );
+    }
+
+    return FormField<String>(
+      initialValue: widget.controller?.text ?? '',
+      validator: widget.validator,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              maxLines: widget.maxLines,
+              controller: widget.controller,
+              keyboardType: widget.keyboardType,
+              obscureText: widget.isPassword ? _obscureText : false,
+              onSubmitted: widget.onSubmitted,
+              onChanged: state.didChange,
+              enabled: widget.enabled,
+              decoration: decoration,
+            ),
+            if (state.hasError) ...[
+              SizedBox(height: widget.errorSpacing),
+              Text(
+                state.errorText ?? '',
+                style: widget.errorStyle,
+                maxLines: widget.errorMaxLines,
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

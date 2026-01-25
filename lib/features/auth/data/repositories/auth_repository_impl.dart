@@ -22,13 +22,13 @@ class AuthRepositoryImpl implements AuthRepository {
       if (!ok) return Left(AuthFailure('Email or password is incorrect'));
       return Right(User(email: loginCredentials.email, hourlyRate: 55));
     } catch (_) {
-      return  Left(AuthFailure('Something went wrong'));
+      return Left(AuthFailure('Something went wrong'));
     }
   }
 
   @override
   Future<Either<Failures, User>> signup({
-    required SignupData signUpData
+    required SignupData signUpData,
   }) async {
     try {
       final ok = await _remote.signup(
@@ -37,10 +37,58 @@ class AuthRepositoryImpl implements AuthRepository {
         password: signUpData.password,
         hourlyRate: signUpData.hourlyRate,
       );
-      if (!ok) return  Left(AuthFailure('Signup failed'));
-      return Right(User(email: signUpData.email, hourlyRate: signUpData.hourlyRate));
+      if (!ok) return Left(AuthFailure('Signup failed'));
+      return Right(
+        User(email: signUpData.email, hourlyRate: signUpData.hourlyRate),
+      );
     } catch (_) {
-      return  Left(AuthFailure('Something went wrong'));
+      return Left(AuthFailure('Something went wrong'));
+    }
+  }
+
+  @override
+  Future<Either<Failures, Unit>> requestPasswordReset({
+    required String email,
+  }) async {
+    try {
+      final ok = await _remote.requestPasswordReset(email: email);
+      if (!ok) return Left(AuthFailure('Email not found'));
+      return const Right(unit);
+    } catch (_) {
+      return Left(AuthFailure('Something went wrong'));
+    }
+  }
+
+  @override
+  Future<Either<Failures, Unit>> verifyResetCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final ok = await _remote.verifyResetCode(email: email, code: code);
+      if (!ok) return Left(AuthFailure('Invalid code'));
+      return const Right(unit);
+    } catch (_) {
+      return Left(AuthFailure('Something went wrong'));
+    }
+  }
+
+  @override
+  Future<Either<Failures, Unit>> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      final ok = await _remote.resetPassword(
+        email: email,
+        code: code,
+        newPassword: newPassword,
+      );
+      if (!ok) return Left(AuthFailure('Reset failed'));
+      return const Right(unit);
+    } catch (_) {
+      return Left(AuthFailure('Something went wrong'));
     }
   }
 }

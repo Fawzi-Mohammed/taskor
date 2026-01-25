@@ -10,4 +10,14 @@ abstract class AuthRepository {
   });
 
   Future<Either<Failures, User>> signup({required SignupData signUpData});
+  Future<Either<Failures, Unit>> requestPasswordReset({required String email});
+  Future<Either<Failures, Unit>> verifyResetCode({
+    required String email,
+    required String code,
+  });
+  Future<Either<Failures, Unit>> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
 }
