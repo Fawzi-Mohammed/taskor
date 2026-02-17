@@ -23,3 +23,7 @@ class OfflineFailure extends Failures {
 class AuthFailure extends Failures {
   const AuthFailure([super.message = 'Authentication failed']);
 }
+
+class UnexpectedFailure extends Failures {
+  const UnexpectedFailure([super.message = 'Unexpected error']);
+}

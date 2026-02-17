@@ -14,6 +14,7 @@ import 'package:taskor/core/config/widgets/app_header.dart';
 class LoginFailedPage extends StatelessWidget {
   const LoginFailedPage({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,14 +34,14 @@ class LoginFailedPage extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.s6),
             Text(
-              AppStrings.loginFailedSubtitleString,
+             AppStrings.loginFailedSubtitleString,
               style: AppTextStyles.regular13,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSizes.s40),
             AppElevatedButton(
               label: AppStrings.tryAgainString,
-              onPressed: () {},
+              onPressed: () => context.go(RoutesName.login),
               backGroundColor: ColorManager.primary,
               borderRadius: AppSizes.s4,
               textStyle: AppTextStyles.bold15.withColor(Colors.white),

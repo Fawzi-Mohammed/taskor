@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/constants/app_sizes.dart';
@@ -12,9 +13,19 @@ import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_state.dart';
 
 class CreateNewPasswordPage extends StatefulWidget {
-  const CreateNewPasswordPage({super.key});
+  const CreateNewPasswordPage({
+    super.key,
+    required this.email,
+    required this.code,
+  });
+
+  final String email;
+  final String code;
 
   @override
   State<CreateNewPasswordPage> createState() => _CreateNewPasswordPageState();
@@ -37,109 +48,132 @@ class _CreateNewPasswordPageState extends State<CreateNewPasswordPage> {
     if (!isValid) {
       return;
     }
+
     FocusScope.of(context).unfocus();
-    context.go(RoutesName.login);
+
+    context.read<AuthBloc>().add(
+      ResetPasswordEvent(
+        email: widget.email,
+        code: widget.code,
+        newPassword: _passwordController.text.trim(),
+        confirmPassword: _confirmPasswordController.text.trim(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.s20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppSizes.s12),
-              const AppHeader(title: AppStrings.createNewPasswordString),
-              const SizedBox(height: AppSizes.s16),
-              Text(
-                AppStrings.createNewPasswordSubtitleString,
-                style: AppTextStyles.regular13,
-              ),
-              const SizedBox(height: AppSizes.s24),
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${AppStrings.passwordString}.',
-                      style: AppTextStyles.semiBold14,
-                    ),
-                    const SizedBox(height: AppSizes.s12),
-                    AppTextField(
-                      controller: _passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      hintText: Text(
-                        AppStrings.passwordStringHint,
-                        style: AppTextStyles.regular11,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSizes.s6,
-                        ),
-                        child: SvgPicture.asset(
-                          IconPath.passwordIcon,
-                          width: AppSizes.icon16,
-                          height: AppSizes.icon16,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(
-                        minWidth: 0,
-                        minHeight: 0,
-                      ),
-                      isPassword: true,
-                      validator: (value) => value.validatePassword(),
-                    ),
-                    const SizedBox(height: AppSizes.s16),
-                    Text(
-                      AppStrings.confirmPasswordString.trim(),
-                      style: AppTextStyles.semiBold14,
-                    ),
-                    const SizedBox(height: AppSizes.s12),
-                    AppTextField(
-                      controller: _confirmPasswordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      hintText: Text(
-                        AppStrings.passwordStringHint,
-                        style: AppTextStyles.regular11,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSizes.s6,
-                        ),
-                        child: SvgPicture.asset(
-                          IconPath.passwordIcon,
-                          width: AppSizes.icon16,
-                          height: AppSizes.icon16,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      prefixIconConstraints: const BoxConstraints(
-                        minWidth: 0,
-                        minHeight: 0,
-                      ),
-                      isPassword: true,
-                      validator: (value) => value.validateConfirmPassword(
-                        _passwordController.text,
-                      ),
-                    ),
-                  ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthResetPasswordSuccess) {
+          context.go(RoutesName.login);
+          return;
+        }
+
+        if (state is AuthError && state.action == AuthAction.resetPassword) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: AppSizes.s20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: AppSizes.s12),
+                const AppHeader(title: AppStrings.createNewPasswordString),
+                const SizedBox(height: AppSizes.s16),
+                Text(
+                  AppStrings.createNewPasswordSubtitleString,
+                  style: AppTextStyles.regular13,
                 ),
-              ),
-              const SizedBox(height: AppSizes.s32),
-              AppElevatedButton(
-                label: AppStrings.changePasswordString,
-                onPressed: _handleChangePassword,
-                backGroundColor: ColorManager.primary,
-                borderRadius: AppSizes.s4,
-                textStyle: AppTextStyles.bold15.withColor(Colors.white),
-              ),
-              const SizedBox(height: AppSizes.s24),
-            ],
+                const SizedBox(height: AppSizes.s24),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${AppStrings.passwordString}.',
+                        style: AppTextStyles.semiBold14,
+                      ),
+                      const SizedBox(height: AppSizes.s12),
+                      AppTextField(
+                        controller: _passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        hintText: Text(
+                          AppStrings.passwordStringHint,
+                          style: AppTextStyles.regular11,
+                        ),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.s6,
+                          ),
+                          child: SvgPicture.asset(
+                            IconPath.passwordIcon,
+                            width: AppSizes.icon16,
+                            height: AppSizes.icon16,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                        isPassword: true,
+                        validator: (value) => value.validatePassword(),
+                      ),
+                      const SizedBox(height: AppSizes.s16),
+                      Text(
+                        AppStrings.confirmPasswordString.trim(),
+                        style: AppTextStyles.semiBold14,
+                      ),
+                      const SizedBox(height: AppSizes.s12),
+                      AppTextField(
+                        controller: _confirmPasswordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        hintText: Text(
+                          AppStrings.passwordStringHint,
+                          style: AppTextStyles.regular11,
+                        ),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.s6,
+                          ),
+                          child: SvgPicture.asset(
+                            IconPath.passwordIcon,
+                            width: AppSizes.icon16,
+                            height: AppSizes.icon16,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                        isPassword: true,
+                        validator: (value) => value.validateConfirmPassword(
+                          _passwordController.text,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSizes.s32),
+                AppElevatedButton(
+                  label: AppStrings.changePasswordString,
+                  onPressed: _handleChangePassword,
+                  backGroundColor: ColorManager.primary,
+                  borderRadius: AppSizes.s4,
+                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                ),
+                const SizedBox(height: AppSizes.s24),
+              ],
+            ),
           ),
         ),
       ),

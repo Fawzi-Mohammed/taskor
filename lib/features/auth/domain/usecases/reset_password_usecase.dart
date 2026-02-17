@@ -10,11 +10,13 @@ class ResetPasswordUseCase {
     required String email,
     required String code,
     required String newPassword,
+    required String confirmPassword,
   }) {
     return _repo.resetPassword(
       email: email,
       code: code,
       newPassword: newPassword,
+      confirmPassword: confirmPassword,
     );
   }
 }

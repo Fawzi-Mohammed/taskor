@@ -9,6 +9,6 @@ class LoginUseCase {
   final AuthRepository _repo;
 
   Future<Either<Failures, User>> call({required LoginCredentials credentials}) {
-    return _repo.login(loginCredentials: credentials);
+    return _repo.login(credentials: credentials);
   }
 }

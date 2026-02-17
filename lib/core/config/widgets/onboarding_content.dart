@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:taskor/core/config/constants/app_sizes.dart';
 import 'package:taskor/core/config/extensions/padding_extension.dart';
 

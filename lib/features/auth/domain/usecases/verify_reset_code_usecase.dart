@@ -6,7 +6,10 @@ class VerifyResetCodeUseCase {
   const VerifyResetCodeUseCase(this._repo);
   final AuthRepository _repo;
 
-  Future<Either<Failures, Unit>> call({required String email, required String code}) {
+  Future<Either<Failures, Unit>> call({
+    required String email,
+    required String code,
+  }) {
     return _repo.verifyResetCode(email: email, code: code);
   }
 }

@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:taskor/core/config/constants/app_strings.dart';
 import 'package:taskor/features/splash_onboarding/domain/usecases/check_onboarding_status_usecase.dart';
 import 'package:taskor/features/splash_onboarding/domain/usecases/complete_onboarding_usecase.dart';
@@ -27,7 +27,7 @@ class SplashOnboardingBloc
     emit(const SplashLoading());
     final result = await _checkStatus();
     result.fold(
-      (_) => emit(const ShowOnboarding()), 
+      (_) => emit(const ShowOnboarding()),
       (status) => status.isOnboardingCompleted
           ? emit(const NavigateToHome())
           : emit(const ShowOnboarding()),

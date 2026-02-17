@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
+import 'package:taskor/core/di/service_locator.dart';
+import 'package:taskor/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:taskor/features/splash_onboarding/presentation/bloc/splash_onboarding_bloc.dart';
 
 class SplashPage extends StatefulWidget {
@@ -27,7 +29,12 @@ class _SplashPageState extends State<SplashPage> {
         if (state is ShowOnboarding) {
           context.go(RoutesName.onboarding);
         } else if (state is NavigateToHome) {
-          context.go(RoutesName.main);
+          final localDataSource = sl<AuthLocalDataSource>();
+          final token = localDataSource.getToken();
+          final rememberMe = localDataSource.getRememberMe();
+          final shouldGoHome = rememberMe && (token?.isNotEmpty ?? false);
+
+          context.go(shouldGoHome ? RoutesName.main : RoutesName.login);
         }
       },
       child: const Scaffold(body: Center(child: CircularProgressIndicator())),

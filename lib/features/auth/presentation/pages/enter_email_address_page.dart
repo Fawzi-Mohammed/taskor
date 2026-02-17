@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/constants/app_sizes.dart';
@@ -13,6 +14,9 @@ import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
+import 'package:taskor/features/auth/presentation/bloc/auth_state.dart';
 
 class EnterEmailAddressPage extends StatefulWidget {
   const EnterEmailAddressPage({super.key});
@@ -36,90 +40,118 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
     if (!isValid) {
       return;
     }
+
     FocusScope.of(context).unfocus();
-    context.go(RoutesName.verifyCode);
+    context.read<AuthBloc>().add(
+      ForgotPasswordEvent(_emailController.text.trim()),
+    );
   }
 
   void _handleCancel() {
     FocusScope.of(context).unfocus();
-    context.pop();
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+
+    context.go(RoutesName.login);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: AppSizes.s12),
-              const AppHeader(title: AppStrings.enterEmailAddressTitleString),
-              const SizedBox(height: AppSizes.s16),
-              Text(
-                AppStrings.enterYourEmailSubtitleString,
-                style: AppTextStyles.regular13,
-              ),
-              const SizedBox(height: AppSizes.s24),
-              Form(
-                key: _formKey,
-                child: AppTextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  hintText: Text(
-                    AppStrings.enterYourEmailHintString,
-                    style: AppTextStyles.regular11,
-                  ),
-                  errorStyle: AppTextStyles.medium11.withColor(
-                    ColorManager.errorColor,
-                  ),
-                  errorMaxLines: 3,
-                  errorSpacing: AppSizes.s12,
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.s6,
-                    ),
-                    child: SvgPicture.asset(
-                      IconPath.emailIcon,
-                      width: AppSizes.icon16,
-                      height: AppSizes.icon16,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  prefixIconConstraints: const BoxConstraints(
-                    minWidth: 0,
-                    minHeight: 0,
-                  ),
-                  validator: (value) {
-                    final error = value.validateEmail();
-                    if (error != null) {
-                      return AppStrings.enterYourAddressCorrectlyString;
-                    }
-                    return null;
-                  },
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthForgotPasswordSuccess) {
+          context.go(
+            RoutesName.verifyCode,
+            extra: <String, String>{
+              'email': state.email,
+              'verificationCode': state.verificationCode,
+            },
+          );
+          return;
+        }
+
+        if (state is AuthError && state.action == AuthAction.forgotPassword) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: AppSizes.s12),
+                const AppHeader(title: AppStrings.enterEmailAddressTitleString),
+                const SizedBox(height: AppSizes.s16),
+                Text(
+                  AppStrings.enterYourEmailSubtitleString,
+                  style: AppTextStyles.regular13,
                 ),
-              ),
-              const SizedBox(height: AppSizes.s32),
-              AppElevatedButton(
-                label: AppStrings.continueString,
-                onPressed: _handleContinue,
-                backGroundColor: ColorManager.primary,
-                borderRadius: AppSizes.s4,
-                textStyle: AppTextStyles.bold15.withColor(Colors.white),
-              ),
-              const SizedBox(height: AppSizes.s12),
-              AppElevatedButton(
-                label: AppStrings.cancelString,
-                onPressed: _handleCancel,
-                backGroundColor: Colors.white,
-                borderRadius: AppSizes.s4,
-                borderColor: ColorManager.primary,
-                textStyle: AppTextStyles.semiBold15,
-              ),
-              const SizedBox(height: AppSizes.s24),
-            ],
-          ).padSym(horizontal: AppSizes.icon20),
+                const SizedBox(height: AppSizes.s24),
+                Form(
+                  key: _formKey,
+                  child: AppTextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    hintText: Text(
+                      AppStrings.enterYourEmailHintString,
+                      style: AppTextStyles.regular11,
+                    ),
+                    errorStyle: AppTextStyles.medium11.withColor(
+                      ColorManager.errorColor,
+                    ),
+                    errorMaxLines: 3,
+                    errorSpacing: AppSizes.s12,
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.s6,
+                      ),
+                      child: SvgPicture.asset(
+                        IconPath.emailIcon,
+                        width: AppSizes.icon16,
+                        height: AppSizes.icon16,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 0,
+                      minHeight: 0,
+                    ),
+                    validator: (value) {
+                      final error = value.validateEmail();
+                      if (error != null) {
+                        return AppStrings.enterYourAddressCorrectlyString;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: AppSizes.s32),
+                AppElevatedButton(
+                  label: AppStrings.continueString,
+                  onPressed: _handleContinue,
+                  backGroundColor: ColorManager.primary,
+                  borderRadius: AppSizes.s4,
+                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                ),
+                const SizedBox(height: AppSizes.s12),
+                AppElevatedButton(
+                  label: AppStrings.cancelString,
+                  onPressed: _handleCancel,
+                  backGroundColor: Colors.white,
+                  borderRadius: AppSizes.s4,
+                  borderColor: ColorManager.primary,
+                  textStyle: AppTextStyles.semiBold15,
+                ),
+                const SizedBox(height: AppSizes.s24),
+              ],
+            ).padSym(horizontal: AppSizes.icon20),
+          ),
         ),
       ),
     );

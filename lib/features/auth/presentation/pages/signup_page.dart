@@ -42,14 +42,44 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
+  void _submitSignUp() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    final normalizedRate = _hourlyRateController.text
+        .trim()
+        .replaceAll(',', '')
+        .replaceAll(r'$', '');
+    final hourlyRate = double.tryParse(normalizedRate) ?? 0;
+
+    context.read<AuthBloc>().add(
+      SignUpEvent(
+        SignupData(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          hourlyRate: hourlyRate,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
-          context.go(RoutesName.main);
-        } else if (state is AuthFailureState) {
-          context.go(RoutesName.loginFailed);
+        if (state is AuthSignUpSuccess) {
+          context.go(RoutesName.login);
+          return;
+        }
+
+        if (state is AuthError && state.action == AuthAction.signUp) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       child: Scaffold(
@@ -206,28 +236,7 @@ class _SignupPageState extends State<SignupPage> {
                 const SizedBox(height: AppSizes.s40),
                 AppElevatedButton(
                   label: AppStrings.signUpString,
-                  onPressed: () {
-                    final isValid = _formKey.currentState?.validate() ?? false;
-                    if (!isValid) {
-                      return;
-                    }
-                    FocusScope.of(context).unfocus();
-                    final normalizedRate = _hourlyRateController.text
-                        .trim()
-                        .replaceAll(',', '')
-                        .replaceAll('\$', '');
-                    final hourlyRate = double.tryParse(normalizedRate) ?? 0;
-                    context.read<AuthBloc>().add(
-                      SignupSubmitted(
-                        SignupData(
-                          name: _nameController.text.trim(),
-                          email: _emailController.text.trim(),
-                          password: _passwordController.text.trim(),
-                          hourlyRate: hourlyRate,
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: _submitSignUp,
                   backGroundColor: ColorManager.primary,
                   borderRadius: AppSizes.s4,
                   textStyle: AppTextStyles.bold15.withColor(Colors.white),

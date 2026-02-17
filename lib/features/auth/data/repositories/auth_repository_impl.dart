@@ -1,61 +1,81 @@
 import 'package:dartz/dartz.dart';
+import 'package:taskor/core/error/exceptions.dart';
+import 'package:taskor/core/error/failures.dart';
+import 'package:taskor/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:taskor/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:taskor/features/auth/data/models/user_model.dart';
+import 'package:taskor/features/auth/domain/entities/user.dart';
+import 'package:taskor/features/auth/domain/repositories/auth_repository.dart';
 import 'package:taskor/features/auth/domain/value_objects/login_credentials.dart';
 import 'package:taskor/features/auth/domain/value_objects/signup_data.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/user.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._remote);
+  const AuthRepositoryImpl(this._remote, this._local);
+
   final AuthRemoteDataSource _remote;
+  final AuthLocalDataSource _local;
 
   @override
   Future<Either<Failures, User>> login({
-    required LoginCredentials loginCredentials,
+    required LoginCredentials credentials,
   }) async {
     try {
-      final ok = await _remote.login(
-        email: loginCredentials.email,
-        password: loginCredentials.password,
+      final response = await _remote.login(
+        identifier: credentials.email,
+        password: credentials.password,
       );
-      if (!ok) return Left(AuthFailure('Email or password is incorrect'));
-      return Right(User(email: loginCredentials.email, hourlyRate: 55));
-    } catch (_) {
-      return Left(AuthFailure('Something went wrong'));
+
+      await _local.cacheToken(response.token);
+      await _local.cacheRememberMe(credentials.rememberMe);
+
+      final userModel = UserModel.fromJson(
+        response.responseBody,
+        fallbackIdentifier: credentials.email,
+      );
+
+      return Right(userModel.toEntity());
+    } catch (error) {
+      return Left(_mapFailure(error));
     }
   }
 
   @override
-  Future<Either<Failures, User>> signup({
-    required SignupData signUpData,
-  }) async {
+  Future<Either<Failures, Unit>> signup({required SignupData data}) async {
     try {
-      final ok = await _remote.signup(
-        name: signUpData.name,
-        email: signUpData.email,
-        password: signUpData.password,
-        hourlyRate: signUpData.hourlyRate,
+      await _remote.signup(
+        name: data.name,
+        username: data.name.trim(),
+        email: data.email,
+        password: data.password,
+        hourlyRate: data.hourlyRate,
       );
-      if (!ok) return Left(AuthFailure('Signup failed'));
-      return Right(
-        User(email: signUpData.email, hourlyRate: signUpData.hourlyRate),
-      );
-    } catch (_) {
-      return Left(AuthFailure('Something went wrong'));
+
+      return const Right(unit);
+    } catch (error) {
+      return Left(_mapFailure(error));
     }
   }
 
   @override
-  Future<Either<Failures, Unit>> requestPasswordReset({
+  Future<Either<Failures, Unit>> logout() async {
+    try {
+      await _local.clearToken();
+      await _local.cacheRememberMe(false);
+      return const Right(unit);
+    } catch (error) {
+      return Left(_mapFailure(error));
+    }
+  }
+
+  @override
+  Future<Either<Failures, String>> forgotPassword({
     required String email,
   }) async {
     try {
-      final ok = await _remote.requestPasswordReset(email: email);
-      if (!ok) return Left(AuthFailure('Email not found'));
-      return const Right(unit);
-    } catch (_) {
-      return Left(AuthFailure('Something went wrong'));
+      final response = await _remote.forgotPassword(email: email);
+      return Right(response.verificationCode);
+    } catch (error) {
+      return Left(_mapFailure(error));
     }
   }
 
@@ -65,11 +85,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required String code,
   }) async {
     try {
-      final ok = await _remote.verifyResetCode(email: email, code: code);
-      if (!ok) return Left(AuthFailure('Invalid code'));
+      await _remote.verifyResetCode(email: email, code: code);
       return const Right(unit);
-    } catch (_) {
-      return Left(AuthFailure('Something went wrong'));
+    } catch (error) {
+      return Left(_mapFailure(error));
     }
   }
 
@@ -78,17 +97,39 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String code,
     required String newPassword,
+    required String confirmPassword,
   }) async {
     try {
-      final ok = await _remote.resetPassword(
+      await _remote.resetPassword(
         email: email,
         code: code,
         newPassword: newPassword,
+        confirmPassword: confirmPassword,
       );
-      if (!ok) return Left(AuthFailure('Reset failed'));
+
       return const Right(unit);
-    } catch (_) {
-      return Left(AuthFailure('Something went wrong'));
+    } catch (error) {
+      return Left(_mapFailure(error));
     }
+  }
+
+  Failures _mapFailure(Object error) {
+    if (error is OfflineException) {
+      return OfflineFailure(error.message);
+    }
+
+    if (error is ServerException) {
+      return ServerFailure(error.message);
+    }
+
+    if (error is AuthException) {
+      return AuthFailure(error.message);
+    }
+
+    if (error is FormatException) {
+      return AuthFailure(error.message);
+    }
+
+    return const UnexpectedFailure('Unexpected auth error');
   }
 }

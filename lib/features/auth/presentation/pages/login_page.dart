@@ -11,13 +11,15 @@ import 'package:taskor/core/config/extensions/text_style_extension.dart';
 import 'package:taskor/core/config/extensions/validation_extension.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
+import 'package:taskor/core/config/widgets/app_header.dart';
 import 'package:taskor/core/config/widgets/app_rich_text.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
+import 'package:taskor/core/di/service_locator.dart';
+import 'package:taskor/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:taskor/features/auth/domain/value_objects/login_credentials.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_state.dart';
-import 'package:taskor/core/config/widgets/app_header.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,20 +35,59 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _rememberMe = sl<AuthLocalDataSource>().getRememberMe();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  void _submitLogin() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    context.read<AuthBloc>().add(
+      LoginEvent(
+        LoginCredentials(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          rememberMe: _rememberMe,
+        ),
+      ),
+    );
+  }
+
+  void _handleLoginError(AuthError state) {
+    if (state.type == AuthFailureType.server ||
+        state.type == AuthFailureType.offline) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(state.message)));
+      return;
+    }
+
+    context.go(RoutesName.loginFailed, extra: state.message);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
+        if (state is AuthLoginSuccess) {
           context.go(RoutesName.main);
-        } else if (state is AuthFailureState) {
-          context.go(RoutesName.loginFailed);
+          return;
+        }
+
+        if (state is AuthError && state.action == AuthAction.login) {
+          _handleLoginError(state);
         }
       },
       child: Scaffold(
@@ -146,35 +187,33 @@ class _LoginPageState extends State<LoginPage> {
                         horizontal: -4,
                         vertical: -4,
                       ),
-                      onChanged: (value) =>
-                          setState(() => _rememberMe = value ?? false),
+                      onChanged: (value) {
+                        final isChecked = value ?? false;
+                        setState(() => _rememberMe = isChecked);
+                        sl<AuthLocalDataSource>().cacheRememberMe(isChecked);
+                      },
                     ),
                     const SizedBox(width: AppSizes.s6),
                     Text(
                       AppStrings.rememberMeString,
                       style: AppTextStyles.medium11,
                     ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => context.go(RoutesName.forgotEmail),
+                      child: Text(
+                        AppStrings.forgetPasswordString,
+                        style: AppTextStyles.medium11.withColor(
+                          ColorManager.primary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-
                 const SizedBox(height: AppSizes.s40),
                 AppElevatedButton(
                   label: AppStrings.loginString,
-                  onPressed: () {
-                    final isValid = _formKey.currentState?.validate() ?? false;
-                    if (!isValid) {
-                      return;
-                    }
-                    FocusScope.of(context).unfocus();
-                    context.read<AuthBloc>().add(
-                      LoginSubmitted(
-                        LoginCredentials(
-                          email: _emailController.text.trim(),
-                          password: _passwordController.text.trim(),
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: _submitLogin,
                   backGroundColor: ColorManager.primary,
                   borderRadius: AppSizes.s4,
                   textStyle: AppTextStyles.bold15.withColor(Colors.white),

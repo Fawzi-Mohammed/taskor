@@ -36,7 +36,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RoutesName.loginFailed,
-        builder: (context, state) => const LoginFailedPage(),
+        builder: (context, state) {
+          return LoginFailedPage();
+        },
       ),
 
       // Forgot Password flow
@@ -46,11 +48,43 @@ class AppRouter {
       ),
       GoRoute(
         path: RoutesName.verifyCode,
-        builder: (context, state) => const EnterCodePage(),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! Map) {
+            return const EnterEmailAddressPage();
+          }
+
+          final email = (extra['email'] as String?)?.trim() ?? '';
+          final verificationCode =
+              (extra['verificationCode'] as String?)?.trim() ?? '1234';
+
+          if (email.isEmpty) {
+            return const EnterEmailAddressPage();
+          }
+
+          return EnterCodePage(
+            email: email,
+            verificationCode: verificationCode,
+          );
+        },
       ),
       GoRoute(
         path: RoutesName.resetPassword,
-        builder: (context, state) => const CreateNewPasswordPage(),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! Map) {
+            return const LoginPage();
+          }
+
+          final email = (extra['email'] as String?)?.trim() ?? '';
+          final code = (extra['code'] as String?)?.trim() ?? '';
+
+          if (email.isEmpty || code.isEmpty) {
+            return const LoginPage();
+          }
+
+          return CreateNewPasswordPage(email: email, code: code);
+        },
       ),
 
       // Main (Bottom Nav Shell)
@@ -92,20 +126,6 @@ class AppRouter {
       subtitle: state.error.toString(),
     ),
   );
-}
-
-/// ✅ Minimal shell just for routing structure (you will replace it later with GNav UI)
-class _MainShell extends StatelessWidget {
-  const _MainShell();
-
-  @override
-  Widget build(BuildContext context) {
-    // Default child route: /main/home
-    return const _PlaceholderPage(
-      title: 'Main Shell',
-      subtitle: 'Navigate to /main/home, /main/projects, /main/profile',
-    );
-  }
 }
 
 /// ✅ Placeholder page (no UI implementation, just to compile and test navigation)

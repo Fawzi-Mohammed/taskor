@@ -1,6 +1,8 @@
 class ServerException implements Exception {
   final String message;
-  ServerException([this.message = 'Server error']);
+  final int? statusCode;
+
+  ServerException([this.message = 'Server error', this.statusCode]);
 }
 
 class EmptyCacheException implements Exception {
@@ -15,5 +17,7 @@ class OfflineException implements Exception {
 
 class AuthException implements Exception {
   final String message;
-  AuthException([this.message = 'Auth error']);
+  final int? statusCode;
+
+  AuthException([this.message = 'Auth error', this.statusCode]);
 }
