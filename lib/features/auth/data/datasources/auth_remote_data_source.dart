@@ -6,7 +6,7 @@ import 'package:taskor/features/auth/data/models/login_response_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<LoginResponseModel> login({
-    required String identifier,
+    required String email,
     required String password,
   });
 
@@ -37,12 +37,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<LoginResponseModel> login({
-    required String identifier,
+    required String email,
     required String password,
   }) async {
     final response = await _postWithFallback(
-      paths: const [RequestConstants.loginPath, '/api/auth/login'],
-      body: <String, dynamic>{'identifier': identifier, 'password': password},
+      paths: [RequestConstants.loginPath],
+      body: <String, dynamic>{'email': email, 'password': password},
     );
 
     return LoginResponseModel.fromJson(response);
@@ -57,13 +57,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required double hourlyRate,
   }) async {
     await _postWithFallback(
-      paths: const [RequestConstants.signupPath, '/api/auth/signup', '/signup'],
+      paths: [RequestConstants.signupPath],
       body: <String, dynamic>{
         'name': name,
         'username': username,
         'email': email,
         'password': password,
-        'hourlyRate': hourlyRate,
+        'WatchCost': hourlyRate % 1 == 0 ? hourlyRate.toInt() : hourlyRate,
       },
     );
   }
@@ -73,10 +73,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
   }) async {
     final response = await _postWithFallback(
-      paths: const [
-        RequestConstants.forgotPasswordPath,
-        '/api/auth/forgotPassword',
-      ],
+      paths: [RequestConstants.forgotPasswordPath],
       body: <String, dynamic>{'email': email},
     );
 
@@ -88,12 +85,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String code,
   }) async {
+    final parsedCode = int.tryParse(code.trim());
     await _postWithFallback(
-      paths: const [
-        RequestConstants.verifyResetCodePath,
-        '/api/auth/checkCode',
-      ],
-      body: <String, dynamic>{'email': email, 'code': code},
+      paths: [RequestConstants.verifyResetCodePath],
+      body: <String, dynamic>{'code': parsedCode ?? code.trim()},
     );
   }
 
@@ -105,16 +100,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String confirmPassword,
   }) async {
     await _postWithFallback(
-      paths: const [
-        RequestConstants.resetPasswordPath,
-        '/api/auth/resetPassword',
-      ],
-      body: <String, dynamic>{
-        'email': email,
-        'code': code,
-        'newPassword': newPassword,
-        'confirmPassword': confirmPassword,
-      },
+      paths: [RequestConstants.resetPasswordPath],
+      body: <String, dynamic>{'email': email, 'newPassword': newPassword},
     );
   }
 

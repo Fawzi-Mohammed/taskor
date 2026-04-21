@@ -3,13 +3,15 @@ class RequestConstants {
 
   static const String baseUrl = 'https://api.mohammedzomlot.dev';
 
-  static const String loginPath = '/auth/login';
-  static const String signupPath = '/auth/signup';
-  static const String forgotPasswordPath = '/auth/forgotPassword';
-  static const String verifyResetCodePath = '/auth/checkCode';
-  static const String resetPasswordPath = '/auth/resetPassword';
+  static final String loginPath = '/User/login';
+  static final String signupPath = '/user/signup';
+  static final String forgotPasswordPath = '/user/forgotPassword';
+  static final String verifyResetCodePath = '/user/checkCodeController';
+  static final String resetPasswordPath = '/user/resetPassword';
 
   static const String authToken = 'auth_token';
+  static const String watchCost = 'watch_cost';
   static const String rememberMe = 'remember_me';
+  static const String hasSignedUp = 'has_signed_up';
   static const String onboardingCompleted = 'onboarding_completed';
 }

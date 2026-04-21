@@ -19,6 +19,7 @@ class ForgotPasswordResponseModel {
 
   static String _extractCode(Map<String, dynamic> json) {
     final data = json['data'];
+    final user = json['user'];
 
     final candidates = <Object?>[
       json['code'],
@@ -27,6 +28,7 @@ class ForgotPasswordResponseModel {
       data is Map<String, dynamic> ? data['code'] : null,
       data is Map<String, dynamic> ? data['resetCode'] : null,
       data is Map<String, dynamic> ? data['verificationCode'] : null,
+      user is Map<String, dynamic> ? user['code'] : null,
     ];
 
     for (final candidate in candidates) {

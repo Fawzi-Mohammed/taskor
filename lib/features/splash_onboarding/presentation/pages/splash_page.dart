@@ -32,9 +32,15 @@ class _SplashPageState extends State<SplashPage> {
           final localDataSource = sl<AuthLocalDataSource>();
           final token = localDataSource.getToken();
           final rememberMe = localDataSource.getRememberMe();
-          final shouldGoHome = rememberMe && (token?.isNotEmpty ?? false);
+          final hasSignedUp = localDataSource.getHasSignedUp();
 
-          context.go(shouldGoHome ? RoutesName.main : RoutesName.login);
+          final shouldGoHome = rememberMe && (token?.isNotEmpty ?? false);
+          if (shouldGoHome) {
+            context.go(RoutesName.main);
+            return;
+          }
+
+          context.go(hasSignedUp ? RoutesName.login : RoutesName.signUp);
         }
       },
       child: const Scaffold(body: Center(child: CircularProgressIndicator())),

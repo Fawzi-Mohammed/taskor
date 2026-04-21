@@ -28,8 +28,16 @@ class DioClient {
   }
 
   Uri _buildUri(String path) {
+    final pathUri = Uri.tryParse(path);
+    if (pathUri != null && pathUri.hasScheme && pathUri.host.isNotEmpty) {
+      return pathUri;
+    }
+
+    final normalizedBaseUrl = _baseUrl.endsWith('/')
+        ? _baseUrl.substring(0, _baseUrl.length - 1)
+        : _baseUrl;
     final normalizedPath = path.startsWith('/') ? path : '/$path';
-    return Uri.parse('$_baseUrl$normalizedPath');
+    return Uri.parse('$normalizedBaseUrl$normalizedPath');
   }
 
   void _setHeaders(HttpClientRequest request, Map<String, String>? headers) {

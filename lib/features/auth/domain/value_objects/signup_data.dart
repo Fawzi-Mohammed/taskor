@@ -16,6 +16,10 @@ class SignupData extends Equatable {
   final double hourlyRate;
 
   String get safeUsername {
+    final rawUsername = username?.trim() ?? '';
+    if (rawUsername.isNotEmpty) {
+      return rawUsername;
+    }
     return name.trim();
   }
 

@@ -13,6 +13,7 @@ import 'package:taskor/core/config/extensions/validation_extension.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
+import 'package:taskor/core/config/widgets/app_snack_bar.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
@@ -49,11 +50,6 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
 
   void _handleCancel() {
     FocusScope.of(context).unfocus();
-    if (context.canPop()) {
-      context.pop();
-      return;
-    }
-
     context.go(RoutesName.login);
   }
 
@@ -73,9 +69,7 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
         }
 
         if (state is AuthError && state.action == AuthAction.forgotPassword) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          AppSnackBar.showError(context, message: state.message);
         }
       },
       child: Scaffold(
@@ -86,7 +80,10 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: AppSizes.s12),
-                const AppHeader(title: AppStrings.enterEmailAddressTitleString),
+                AppHeader(
+                  title: AppStrings.enterEmailAddressTitleString,
+                  onBack: _handleCancel,
+                ),
                 const SizedBox(height: AppSizes.s16),
                 Text(
                   AppStrings.enterYourEmailSubtitleString,
@@ -98,6 +95,10 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
                   child: AppTextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    smartDashesType: SmartDashesType.disabled,
+                    smartQuotesType: SmartQuotesType.disabled,
                     hintText: Text(
                       AppStrings.enterYourEmailHintString,
                       style: AppTextStyles.regular11,
@@ -123,21 +124,39 @@ class _EnterEmailAddressPageState extends State<EnterEmailAddressPage> {
                       minHeight: 0,
                     ),
                     validator: (value) {
-                      final error = value.validateEmail();
-                      if (error != null) {
-                        return AppStrings.enterYourAddressCorrectlyString;
+                      final trimmed = value?.trim() ?? '';
+                      if (trimmed.isEmpty) {
+                        return 'Email is required.';
                       }
-                      return null;
+
+                      return value.validateEmail(fieldName: 'email');
                     },
                   ),
                 ),
                 const SizedBox(height: AppSizes.s32),
-                AppElevatedButton(
-                  label: AppStrings.continueString,
-                  onPressed: _handleContinue,
-                  backGroundColor: ColorManager.primary,
-                  borderRadius: AppSizes.s4,
-                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) {
+                    final wasLoading =
+                        previous is AuthLoading &&
+                        previous.action == AuthAction.forgotPassword;
+                    final isLoading =
+                        current is AuthLoading &&
+                        current.action == AuthAction.forgotPassword;
+                    return wasLoading != isLoading;
+                  },
+                  builder: (context, state) {
+                    final isLoading =
+                        state is AuthLoading &&
+                        state.action == AuthAction.forgotPassword;
+                    return AppElevatedButton(
+                      label: AppStrings.continueString,
+                      onPressed: isLoading ? null : _handleContinue,
+                      isLoading: isLoading,
+                      backGroundColor: ColorManager.primary,
+                      borderRadius: AppSizes.s4,
+                      textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSizes.s12),
                 AppElevatedButton(

@@ -5,8 +5,13 @@ abstract class AuthLocalDataSource {
   Future<void> cacheToken(String token);
   String? getToken();
   Future<void> clearToken();
+  Future<void> cacheWatchCost(double watchCost);
+  double? getWatchCost();
+  Future<void> clearWatchCost();
   Future<void> cacheRememberMe(bool rememberMe);
   bool getRememberMe();
+  Future<void> cacheHasSignedUp(bool hasSignedUp);
+  bool getHasSignedUp();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -30,6 +35,21 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
+  Future<void> cacheWatchCost(double watchCost) {
+    return _sharedPrefService.setDouble(RequestConstants.watchCost, watchCost);
+  }
+
+  @override
+  double? getWatchCost() {
+    return _sharedPrefService.getDouble(RequestConstants.watchCost);
+  }
+
+  @override
+  Future<void> clearWatchCost() {
+    return _sharedPrefService.remove(RequestConstants.watchCost);
+  }
+
+  @override
   Future<void> cacheRememberMe(bool rememberMe) {
     return _sharedPrefService.setBool(RequestConstants.rememberMe, rememberMe);
   }
@@ -37,5 +57,18 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   bool getRememberMe() {
     return _sharedPrefService.getBool(RequestConstants.rememberMe);
+  }
+
+  @override
+  Future<void> cacheHasSignedUp(bool hasSignedUp) {
+    return _sharedPrefService.setBool(
+      RequestConstants.hasSignedUp,
+      hasSignedUp,
+    );
+  }
+
+  @override
+  bool getHasSignedUp() {
+    return _sharedPrefService.getBool(RequestConstants.hasSignedUp);
   }
 }

@@ -21,6 +21,10 @@ class AppTextField extends StatefulWidget {
     this.errorStyle,
     this.errorMaxLines,
     this.errorSpacing,
+    this.autocorrect = true,
+    this.enableSuggestions = true,
+    this.smartDashesType,
+    this.smartQuotesType,
   });
   final TextEditingController? controller;
   final Widget? hintText;
@@ -39,6 +43,10 @@ class AppTextField extends StatefulWidget {
   final TextStyle? errorStyle;
   final int? errorMaxLines;
   final double? errorSpacing;
+  final bool autocorrect;
+  final bool enableSuggestions;
+  final SmartDashesType? smartDashesType;
+  final SmartQuotesType? smartQuotesType;
   @override
   State<AppTextField> createState() => _AppTextFieldState();
 }
@@ -112,6 +120,14 @@ class _AppTextFieldState extends State<AppTextField> {
         controller: widget.controller,
         keyboardType: widget.keyboardType,
         obscureText: widget.isPassword ? _obscureText : false,
+        autocorrect: widget.isPassword ? false : widget.autocorrect,
+        enableSuggestions: widget.isPassword ? false : widget.enableSuggestions,
+        smartDashesType: widget.isPassword
+            ? SmartDashesType.disabled
+            : widget.smartDashesType,
+        smartQuotesType: widget.isPassword
+            ? SmartQuotesType.disabled
+            : widget.smartQuotesType,
         onFieldSubmitted: widget.onSubmitted,
         validator: widget.validator,
         enabled: widget.enabled,
@@ -131,6 +147,16 @@ class _AppTextFieldState extends State<AppTextField> {
               controller: widget.controller,
               keyboardType: widget.keyboardType,
               obscureText: widget.isPassword ? _obscureText : false,
+              autocorrect: widget.isPassword ? false : widget.autocorrect,
+              enableSuggestions: widget.isPassword
+                  ? false
+                  : widget.enableSuggestions,
+              smartDashesType: widget.isPassword
+                  ? SmartDashesType.disabled
+                  : widget.smartDashesType,
+              smartQuotesType: widget.isPassword
+                  ? SmartQuotesType.disabled
+                  : widget.smartQuotesType,
               onSubmitted: widget.onSubmitted,
               onChanged: state.didChange,
               enabled: widget.enabled,

@@ -10,6 +10,7 @@ import 'package:taskor/core/config/extensions/validation_extension.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
+import 'package:taskor/core/config/widgets/app_snack_bar.dart';
 import 'package:taskor/core/config/widgets/otp_field.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
@@ -30,6 +31,7 @@ class EnterCodePage extends StatefulWidget {
 }
 
 class _EnterCodePageState extends State<EnterCodePage> {
+  static const String _trainingCode = '1234';
   String _code = '';
   bool? _isCodeValid;
   String? _errorMessage;
@@ -48,6 +50,14 @@ class _EnterCodePageState extends State<EnterCodePage> {
       setState(() {
         _isCodeValid = false;
         _errorMessage = error;
+      });
+      return;
+    }
+
+    if (_code.trim() != _trainingCode) {
+      setState(() {
+        _isCodeValid = false;
+        _errorMessage = 'Code is invalid.';
       });
       return;
     }
@@ -78,8 +88,9 @@ class _EnterCodePageState extends State<EnterCodePage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthForgotPasswordSuccess && state.email == widget.email) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Verification code resent')),
+          AppSnackBar.showSuccess(
+            context,
+            message: 'Verification code resent.',
           );
           return;
         }
@@ -163,12 +174,29 @@ class _EnterCodePageState extends State<EnterCodePage> {
                   ),
                 ),
                 const SizedBox(height: AppSizes.s24),
-                AppElevatedButton(
-                  label: AppStrings.verifyEmailString,
-                  onPressed: _handleVerify,
-                  backGroundColor: ColorManager.primary,
-                  borderRadius: AppSizes.s4,
-                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) {
+                    final wasLoading =
+                        previous is AuthLoading &&
+                        previous.action == AuthAction.verifyResetCode;
+                    final isLoading =
+                        current is AuthLoading &&
+                        current.action == AuthAction.verifyResetCode;
+                    return wasLoading != isLoading;
+                  },
+                  builder: (context, state) {
+                    final isLoading =
+                        state is AuthLoading &&
+                        state.action == AuthAction.verifyResetCode;
+                    return AppElevatedButton(
+                      label: AppStrings.verifyEmailString,
+                      onPressed: isLoading ? null : _handleVerify,
+                      isLoading: isLoading,
+                      backGroundColor: ColorManager.primary,
+                      borderRadius: AppSizes.s4,
+                      textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSizes.s24),
               ],

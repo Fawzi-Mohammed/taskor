@@ -78,7 +78,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return BlocListener<SplashOnboardingBloc, SplashOnboardingState>(
       listener: (context, state) {
         if (state is NavigateToHome) {
-          context.go(RoutesName.main);
+          context.go(RoutesName.splash);
         }
       },
       child: Scaffold(

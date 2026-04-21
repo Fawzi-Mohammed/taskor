@@ -30,19 +30,30 @@ class UserModel {
 
     final identifier = fallbackIdentifier.trim();
     final inferredUsername = _inferUsername(identifier);
+    final parsedUsername = _usernameFrom(userMap);
 
     return UserModel(
       name: (userMap['name'] as String?)?.trim().isNotEmpty == true
           ? (userMap['name'] as String).trim()
           : inferredUsername,
-      username: (userMap['username'] as String?)?.trim().isNotEmpty == true
-          ? (userMap['username'] as String).trim()
+      username: parsedUsername?.trim().isNotEmpty == true
+          ? parsedUsername!.trim()
           : inferredUsername,
       email: (userMap['email'] as String?)?.trim().isNotEmpty == true
           ? (userMap['email'] as String).trim()
           : (identifier.contains('@') ? identifier : ''),
-      hourlyRate: _toDouble(userMap['hourlyRate']),
+      hourlyRate: _toDouble(
+        userMap['WatchCost'] ??
+            userMap['watchCost'] ??
+            userMap['hourlyRate'] ??
+            userMap['hourly_rate'],
+      ),
     );
+  }
+
+  static String? _usernameFrom(Map<String, dynamic> userMap) {
+    final candidate = userMap['username'] ?? userMap['userName'];
+    return candidate is String ? candidate : null;
   }
 
   static Map<String, dynamic> _extractUserMap(Map<String, dynamic> json) {

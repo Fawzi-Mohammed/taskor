@@ -13,6 +13,7 @@ import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
 import 'package:taskor/core/config/widgets/app_rich_text.dart';
+import 'package:taskor/core/config/widgets/app_snack_bar.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
 import 'package:taskor/features/auth/domain/value_objects/signup_data.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
@@ -29,6 +30,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _hourlyRateController = TextEditingController();
@@ -36,6 +38,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   void dispose() {
     _nameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _hourlyRateController.dispose();
@@ -59,6 +62,7 @@ class _SignupPageState extends State<SignupPage> {
       SignUpEvent(
         SignupData(
           name: _nameController.text.trim(),
+          username: _usernameController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
           hourlyRate: hourlyRate,
@@ -77,9 +81,7 @@ class _SignupPageState extends State<SignupPage> {
         }
 
         if (state is AuthError && state.action == AuthAction.signUp) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          AppSnackBar.showError(context, message: state.message);
         }
       },
       child: Scaffold(
@@ -136,6 +138,37 @@ class _SignupPageState extends State<SignupPage> {
                         validator: (value) => value.validateName(
                           fieldName: AppStrings.nameString,
                         ),
+                      ),
+                      const SizedBox(height: AppSizes.s16),
+                      Text('Username', style: AppTextStyles.semiBold14),
+                      const SizedBox(height: AppSizes.s12),
+                      AppTextField(
+                        controller: _usernameController,
+                        hintText: Text(
+                          'Enter Username',
+                          style: AppTextStyles.regular11,
+                        ),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSizes.s6,
+                          ),
+                          child: SvgPicture.asset(
+                            IconPath.profile,
+                            width: AppSizes.icon16,
+                            height: AppSizes.icon16,
+                            fit: BoxFit.cover,
+                            colorFilter: const ColorFilter.mode(
+                              ColorManager.primary,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
+                        ),
+                        validator: (value) =>
+                            value.validateName(fieldName: 'Username'),
                       ),
                       const SizedBox(height: AppSizes.s16),
                       Text(
@@ -234,12 +267,29 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 const SizedBox(height: AppSizes.s40),
-                AppElevatedButton(
-                  label: AppStrings.signUpString,
-                  onPressed: _submitSignUp,
-                  backGroundColor: ColorManager.primary,
-                  borderRadius: AppSizes.s4,
-                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) {
+                    final wasSignUpLoading =
+                        previous is AuthLoading &&
+                        previous.action == AuthAction.signUp;
+                    final isSignUpLoading =
+                        current is AuthLoading &&
+                        current.action == AuthAction.signUp;
+                    return wasSignUpLoading != isSignUpLoading;
+                  },
+                  builder: (context, state) {
+                    final isLoading =
+                        state is AuthLoading &&
+                        state.action == AuthAction.signUp;
+                    return AppElevatedButton(
+                      label: AppStrings.signUpString,
+                      onPressed: isLoading ? null : _submitSignUp,
+                      isLoading: isLoading,
+                      backGroundColor: ColorManager.primary,
+                      borderRadius: AppSizes.s4,
+                      textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSizes.s10),
                 Center(

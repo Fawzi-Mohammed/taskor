@@ -3,8 +3,12 @@ final RegExp _emailRegex = RegExp(
   caseSensitive: false,
 );
 final RegExp _digitsOnlyRegex = RegExp(r'^\d+$');
+final RegExp _upperCaseRegex = RegExp(r'[A-Z]');
+final RegExp _lowerCaseRegex = RegExp(r'[a-z]');
+final RegExp _hasDigitRegex = RegExp(r'\d');
 
 extension ValidationExtension on String? {
+  static const String requiredFieldMessage = 'This field is required.';
   String? get _trimmed => this?.trim();
 
   bool get isNullOrEmpty {
@@ -30,14 +34,14 @@ extension ValidationExtension on String? {
 
   String? validateRequired({String fieldName = 'Field'}) {
     if (isNullOrEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     return null;
   }
 
   String? validateEmail({String fieldName = 'Email'}) {
     if (isNullOrEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     if (!isValidEmail) {
       return 'Please enter a valid $fieldName.';
@@ -48,10 +52,17 @@ extension ValidationExtension on String? {
   String? validatePassword({int minLength = 8, String fieldName = 'Password'}) {
     final value = _trimmed;
     if (value == null || value.isEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     if (value.length < minLength) {
       return '$fieldName must be at least $minLength characters.';
+    }
+    final hasUppercase = _upperCaseRegex.hasMatch(value);
+    final hasLowercase = _lowerCaseRegex.hasMatch(value);
+    final hasNumber = _hasDigitRegex.hasMatch(value);
+
+    if (!hasUppercase || !hasLowercase || !hasNumber) {
+      return '$fieldName must include uppercase, lowercase, and a number.';
     }
     return null;
   }
@@ -62,11 +73,11 @@ extension ValidationExtension on String? {
   }) {
     final value = _trimmed;
     if (value == null || value.isEmpty) {
-      return 'Confirm $fieldName is required.';
+      return requiredFieldMessage;
     }
     final originalTrimmed = original?.trim();
     if (originalTrimmed == null || originalTrimmed.isEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     if (value != originalTrimmed) {
       return '$fieldName does not match.';
@@ -77,7 +88,7 @@ extension ValidationExtension on String? {
   String? validateName({String fieldName = 'Name', int minLength = 2}) {
     final value = _trimmed;
     if (value == null || value.isEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     if (value.length < minLength) {
       return '$fieldName must be at least $minLength characters.';
@@ -88,7 +99,7 @@ extension ValidationExtension on String? {
   String? validateHourlyRate({String fieldName = 'Hourly rate'}) {
     final value = _trimmed;
     if (value == null || value.isEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     final normalized = value.replaceAll(',', '').replaceAll('\$', '');
     final rate = double.tryParse(normalized);
@@ -104,7 +115,7 @@ extension ValidationExtension on String? {
   String? validateCode({int length = 4, String fieldName = 'Code'}) {
     final value = _trimmed;
     if (value == null || value.isEmpty) {
-      return '$fieldName is required.';
+      return requiredFieldMessage;
     }
     if (!_digitsOnlyRegex.hasMatch(value)) {
       return '$fieldName must contain only digits.';

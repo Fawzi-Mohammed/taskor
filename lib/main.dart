@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:taskor/core/config/router/router.dart';
 import 'package:taskor/core/config/router/routers_name.dart';
+import 'package:taskor/core/config/widgets/app_snack_bar.dart';
 import 'package:taskor/core/di/service_locator.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:taskor/features/auth/presentation/bloc/auth_event.dart';
@@ -51,9 +52,7 @@ class MainScaffold extends StatelessWidget {
         }
 
         if (state is AuthError && state.action == AuthAction.logout) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          AppSnackBar.showError(context, message: state.message);
         }
       },
       child: Scaffold(

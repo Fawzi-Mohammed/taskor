@@ -13,6 +13,7 @@ import 'package:taskor/core/config/router/routers_name.dart';
 import 'package:taskor/core/config/widgets/app_elevated_button.dart';
 import 'package:taskor/core/config/widgets/app_header.dart';
 import 'package:taskor/core/config/widgets/app_rich_text.dart';
+import 'package:taskor/core/config/widgets/app_snack_bar.dart';
 import 'package:taskor/core/config/widgets/app_text_field.dart';
 import 'package:taskor/core/di/service_locator.dart';
 import 'package:taskor/features/auth/data/datasources/auth_local_data_source.dart';
@@ -66,15 +67,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLoginError(AuthError state) {
-    if (state.type == AuthFailureType.server ||
-        state.type == AuthFailureType.offline) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(state.message)));
-      return;
-    }
-
-    context.go(RoutesName.loginFailed, extra: state.message);
+    AppSnackBar.showError(context, message: state.message);
   }
 
   @override
@@ -121,6 +114,10 @@ class _LoginPageState extends State<LoginPage> {
                       AppTextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        smartDashesType: SmartDashesType.disabled,
+                        smartQuotesType: SmartQuotesType.disabled,
                         hintText: Text(
                           AppStrings.emailStringHint,
                           style: AppTextStyles.regular11,
@@ -171,7 +168,9 @@ class _LoginPageState extends State<LoginPage> {
                           minHeight: 0,
                         ),
                         isPassword: true,
-                        validator: (value) => value.validatePassword(),
+                        validator: (value) => value.validateRequired(
+                          fieldName: AppStrings.passwordString,
+                        ),
                       ),
                     ],
                   ),
@@ -211,12 +210,29 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: AppSizes.s40),
-                AppElevatedButton(
-                  label: AppStrings.loginString,
-                  onPressed: _submitLogin,
-                  backGroundColor: ColorManager.primary,
-                  borderRadius: AppSizes.s4,
-                  textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                BlocBuilder<AuthBloc, AuthState>(
+                  buildWhen: (previous, current) {
+                    final wasLoginLoading =
+                        previous is AuthLoading &&
+                        previous.action == AuthAction.login;
+                    final isLoginLoading =
+                        current is AuthLoading &&
+                        current.action == AuthAction.login;
+                    return wasLoginLoading != isLoginLoading;
+                  },
+                  builder: (context, state) {
+                    final isLoading =
+                        state is AuthLoading &&
+                        state.action == AuthAction.login;
+                    return AppElevatedButton(
+                      label: AppStrings.loginString,
+                      onPressed: isLoading ? null : _submitLogin,
+                      isLoading: isLoading,
+                      backGroundColor: ColorManager.primary,
+                      borderRadius: AppSizes.s4,
+                      textStyle: AppTextStyles.bold15.withColor(Colors.white),
+                    );
+                  },
                 ),
                 const SizedBox(height: AppSizes.s10),
                 Center(

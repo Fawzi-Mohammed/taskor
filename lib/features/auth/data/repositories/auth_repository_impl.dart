@@ -21,12 +21,23 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final response = await _remote.login(
-        identifier: credentials.email,
+        email: credentials.email,
         password: credentials.password,
       );
 
-      await _local.cacheToken(response.token);
       await _local.cacheRememberMe(credentials.rememberMe);
+      await _local.cacheHasSignedUp(true);
+
+      if (credentials.rememberMe) {
+        await _local.cacheToken(response.token);
+        final watchCost = response.watchCost;
+        if (watchCost != null) {
+          await _local.cacheWatchCost(watchCost);
+        }
+      } else {
+        await _local.clearToken();
+        await _local.clearWatchCost();
+      }
 
       final userModel = UserModel.fromJson(
         response.responseBody,
@@ -44,11 +55,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _remote.signup(
         name: data.name,
-        username: data.name.trim(),
+        username: data.safeUsername,
         email: data.email,
         password: data.password,
         hourlyRate: data.hourlyRate,
       );
+      await _local.cacheHasSignedUp(true);
 
       return const Right(unit);
     } catch (error) {
@@ -60,6 +72,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failures, Unit>> logout() async {
     try {
       await _local.clearToken();
+      await _local.clearWatchCost();
       await _local.cacheRememberMe(false);
       return const Right(unit);
     } catch (error) {

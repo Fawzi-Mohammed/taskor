@@ -14,6 +14,10 @@ class SharedPrefService {
     await _prefs.setString(key, value);
   }
 
+  Future<void> setDouble(String key, double value) async {
+    await _prefs.setDouble(key, value);
+  }
+
   // Read
   bool getBool(String key) {
     return _prefs.getBool(key) ?? false;
@@ -21,6 +25,10 @@ class SharedPrefService {
 
   String? getString(String key) {
     return _prefs.getString(key);
+  }
+
+  double? getDouble(String key) {
+    return _prefs.getDouble(key);
   }
 
   // Remove
